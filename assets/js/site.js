@@ -42,7 +42,7 @@
     hint.className = 'table-hint';
     hint.textContent = 'Scroll horizontally to read all columns.';
     hint.hidden = true;
-    wrapper.after(hint);
+    wrapper.before(hint);
     const updateHint = () => { hint.hidden = wrapper.scrollWidth <= wrapper.clientWidth + 1; };
     updateHint();
     if ('ResizeObserver' in window) new ResizeObserver(updateHint).observe(wrapper);
