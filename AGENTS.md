@@ -7,3 +7,4 @@
 - Use the shared layouts and CSS. Add no fabricated posts, dates, personal details, or metrics.
 - Build with Jekyll and check navigation, taxonomy links, formulas, diagrams, and mobile overflow before publishing.
 - Keep CDN dependencies pinned. Diagrams and formulas must retain a readable source fallback when external scripts fail.
+- When translating an approved source article, preserve its section structure, claims, examples, tables, and limitations. Review meaning against the source; rendering checks alone do not establish translation fidelity.

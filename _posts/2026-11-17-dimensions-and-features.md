@@ -1,5 +1,5 @@
 ---
-title: "Dimensions and Features: A Practical Framework"
+title: "Dimensions and Features: From Goals to Representations"
 description: "How goals shape what we measure, what we preserve, and how we represent it. A decision framework connecting feature engineering, learned representations, and causal questions."
 date: 2026-11-17 10:00:00 -0500
 categories: [Data Science]
@@ -9,11 +9,9 @@ mermaid: true
 math: true
 ---
 
-Adding features, reducing dimensions, changing coordinates, and learning embeddings can look like different activities. They share a question:
+This article brings together the concepts, decision framework, and engineering practices developed in our discussion. The screw example illustrates the method; actual requirements must follow the applicable drawings, inspection specifications, and study conditions.
 
-> What differences must remain visible for the task we want to accomplish?
-
-This article develops a practical framework around that question. It connects the mathematics of representation with feature engineering, machine learning, and a concrete example: inspecting screws, then predicting their service life.
+> First identify the differences the goal requires us to preserve, then decide how to observe and represent them. If information is missing, improve observation. If the representation is inadequate, transform it. If evidence is insufficient, improve the study design.
 
 ## 1. Dimensions, information, and representation
 
@@ -27,29 +25,27 @@ This article develops a practical framework around that question. It connects th
 | Data axes | Organization into samples, time, space, or channels | The number of array axes is not the number of features |
 | Task-relevant information | Information needed for a particular judgment or action | Changes with the goal |
 
-For example, transforming a scalar into three coordinates adds representation dimensions:
+For example, representing a scalar with three coordinates adds representation dimensions:
 
 $$
 x \longmapsto [x,x^2,x^3]
 $$
 
-It adds no independent observation. All three values are determined by the original value. Yet the new representation may make a relationship easier for a limited model to learn.
+It adds no independent observational information. It may make a relationship that was previously difficult to express easier for a model to learn.
 
 Separate the object, the measurement, and the representation:
 
 ```mermaid
-flowchart LR
+flowchart TD
     O["Actual state of the object"] -->|"Measurement and sampling"| X["Observations X"]
-    X -->|"Transformation"| Z["Representation Z"]
-    Z -->|"Analysis or model"| R["Judgment or action"]
+    X -->|"Transformation: phi"| Z["Representation Z"]
+    Z -->|"Analysis, model, or rules"| R["Judgment or action"]
     G["Goal and constraints"] -.-> X
     G -.-> Z
     G -.-> R
 ```
 
-*Figure 1. Measurement and representation are separate stages. Each can leave relevant distinctions unobserved or inaccessible.*
-
-A deterministic transformation cannot create new observational information from nothing. Inferring an unobserved property requires assumptions and evidence beyond the transformation itself.
+*Figure 1. Measurement and representation transformation are separate stages. A deterministic transformation cannot create new observational information absent from its input; inferring an unobserved state requires additional assumptions and evidence.*
 
 ## 2. Why transform dimensions?
 
@@ -61,9 +57,9 @@ Three motivations recur:
 2. **Reduce interference.** Remove redundancy or variation irrelevant to the goal.
 3. **Align with structure.** Match coordinates, scales, adjacency, or hierarchy to the object and task.
 
-For a relationship such as $$y=x^2$$, a linear model using only x cannot express it exactly. Defining a feature $$z=x^2$$ makes the relationship linear in z. The required nonlinear operation has moved into the representation.
+A good representation must account for the object's structure, the research goal, and the available processing capabilities. Easier prediction, easier explanation, and causal justification are different evaluation criteria.
 
-This is not free: someone, or some learning procedure, still needs to find the useful transformation.
+### 2.1 Types of dimension operations
 
 | Operation | Purpose | Question to check |
 |---|---|---|
@@ -79,7 +75,7 @@ These categories overlap. Replacing seven measurements with their sum compresses
 
 ## 3. Rolling features, convolution, and learned features
 
-### Does a seven-day total add information?
+### 3.1 Does a seven-day sales total increase dimensionality?
 
 Let daily sales be x(t), and define:
 
@@ -93,7 +89,7 @@ $$
 
 For ordinary linear regression already receiving all seven values, adding their sum does not expand the space of linear functions and introduces exact collinearity. For other models, such as decision trees, a threshold on the total can be much easier to express. Regularization can also change how equivalent information is used during training.
 
-### What convolution extracts
+### 3.2 The role of convolution
 
 A fixed rolling sum is a discrete convolution. Its kernel specifies a local weighted computation; sliding repeats that computation at different positions.
 
@@ -107,10 +103,10 @@ Both [10, 20, 30] and [10, 100, 30] produce an endpoint difference of 20. A resp
 
 Deep learning commonly calls sliding cross-correlation “convolution,” although the strict mathematical definitions differ by kernel reversal. Rolling maxima and medians are generally not fixed-kernel linear convolutions.
 
-### How a network learns feature extractors
+### 3.3 How neural networks learn features
 
 ```mermaid
-flowchart LR
+flowchart TD
     X["Raw input"] --> F["Learnable feature extractor"]
     F --> H["Hidden representation"]
     H --> P["Prediction"]
@@ -119,15 +115,17 @@ flowchart LR
     L -.->|"Updates prediction parameters"| P
 ```
 
-*Figure 2. The training objective can shape both the representation and the prediction model.*
+*Figure 2. Features do not have to be named in advance. The training objective can jointly shape the feature extractor and the prediction model.*
 
-A convolutional layer uses local connections and shares kernel weights across positions. A fully connected layer typically connects each output to every input. Attention computes input-dependent aggregation weights over the positions it is allowed to access.
+- **Convolutional layers:** local connections, with kernel weights shared across positions.
+- **Fully connected layers:** each output typically connects to all inputs through learnable weights.
+- **Attention layers:** compute matching weights from the input, then aggregate information from positions they are allowed to access.
 
 Multiple layers combine features into further features. Convolutional receptive fields can grow with depth, while nonlinear activations allow more complex relationships than a purely linear stack.
 
 In an ordinary fixed architecture, the number of hidden coordinates is specified in advance. Training learns how to compute those coordinates; it does not continually add physical feature columns.
 
-Hidden features need not be uninterpretable, but they usually have no predefined business meaning. Useful representations can also be distributed across multiple coordinates rather than captured by one named feature.
+Hidden representations are not necessarily uninterpretable, but they usually have no predefined business meaning. Attention weights also cannot be directly treated as final feature importance or causal effects.
 
 ## 4. Prediction and causality need different evidence
 
@@ -156,13 +154,13 @@ Surface color might predict a short life. Changing the color alone might have no
 
 An interpretable feature is not automatically a cause. Neural networks can assist causal estimation, but the causal claim comes from the study design and assumptions, not from network complexity or predictive accuracy.
 
-Likewise, changing a hidden coordinate and observing the model's response is not automatically a real-world intervention. The coordinate may mix several physical attributes, with no unique operation that changes it in isolation.
+Likewise, changing a hidden coordinate and observing the model's prediction is not equivalent to a real-world intervention experiment.
 
 ## 5. The dimension decision card
 
 > Design a representation around the distinctions the goal requires. Preserve necessary differences, merge differences that can be ignored, and test whether the result is sufficient.
 
-### The workflow
+### 5.1 The complete workflow
 
 ```mermaid
 flowchart TD
@@ -182,7 +180,7 @@ flowchart TD
 
 *Figure 4. Failure calls for diagnosis, not automatically for more features.*
 
-### A reusable template
+### 5.2 A reusable template
 
 | Step | Question |
 |---|---|
@@ -197,7 +195,7 @@ flowchart TD
 | 9. Cost | Are measurement, computation, interpretation, and maintenance affordable? |
 | 10. Boundary | When do we stop, and what triggers reassessment? |
 
-### The central test
+### 5.3 The central test: preserve goal-relevant distinctions
 
 For a transformation $$Z=\phi(X)$$, ask:
 
@@ -211,7 +209,7 @@ Ideally, a predictive representation preserves all information in X relevant to 
 
 The requirements below illustrate the framework. Actual acceptance criteria must come from the applicable drawings and inspection specifications.
 
-### Apply the card to both goals
+### 6.1 The same card, different goals
 
 | Decision | Factory acceptance inspection | Service-life prediction at factory release |
 |---|---|---|
@@ -226,7 +224,7 @@ The requirements below illustrate the framework. Actual acceptance criteria must
 | Cost | Inspection time, reinspection, and missed defects | Additional measurements and life testing versus predictive benefit |
 | Boundary | Reassess when type, specification, equipment, or process changes | Reassess when conditions change or predictions become unreliable |
 
-### Align coordinates with the requirement
+### 6.2 Transformations aligned with the goal
 
 For a length accepted between Lmin and Lmax, define:
 
@@ -238,7 +236,7 @@ A positive value places the measured length inside the interval; a negative valu
 
 If any crack above a specified size makes a screw unacceptable, an appropriate maximum crack measure may be more useful than an average surface measure. The choice must follow the actual rule, not a general preference for maxima.
 
-### Reuse assets when the goal changes
+### 6.3 Reuse existing assets when the goal changes
 
 ```mermaid
 flowchart TD
@@ -270,13 +268,13 @@ Life prediction requires extra care:
 | Automated feature search | Candidate operations, parameters, and evaluation | Searches combinations and tests usefulness |
 | Representation learning | Inputs, architecture, objective, and constraints | Learns extractor parameters and internal representations |
 
-Reasonable manual features can reduce the learning burden when data is limited. Automated learning can reduce hand design and discover useful combinations. Neither removes the need to define data meaning, timing, and validation.
+Manual feature engineering remains useful because reasonable structural assumptions can reduce the learning burden when data is limited. Business definitions, information availability, and data sources also require governance. Automated learning can reduce manual design and discover complex combinations.
 
 Do not rank features solely by individual correlation. Two features may be weak alone but important together. Selection should be task-specific, tested with independent data and, where useful, feature-group comparisons or ablation.
 
 ## 8. Engineering a feature system without endless columns
 
-### Separate metrics, families, and instances
+### 8.1 Three levels: metrics, families, and instances
 
 | Level | Example | What to manage |
 |---|---|---|
@@ -286,7 +284,7 @@ Do not rank features solely by individual correlation. Two features may be weak 
 
 These windowed means are not identical, but their implementation should be reusable. Before treating columns as equivalent, verify inclusion of the current day, calendar versus observation windows, missing dates, grouping keys, and partial-history handling.
 
-### Make features self-describing
+### 8.2 Self-description instead of a rigid single classification
 
 Record:
 
@@ -296,9 +294,9 @@ Record:
 - Applicability, missing-value handling, and quality expectations.
 - Ownership, lifecycle, validated uses, and consumers.
 
-Metadata can live in database catalogs, extended properties, metadata tables, or configuration files. YAML is one possible carrier, not a requirement. Choose an authoritative source and validate its consistency with the actual calculations.
+Metadata can live in database catalogs, extended properties, metadata tables, or configuration files. YAML is one possible carrier, not a requirement. What matters is consistent structure, queryability, validation, and a clearly identified authoritative source.
 
-### Materialize by task
+### 8.3 From a shared wide table to task-specific materialization
 
 ```mermaid
 flowchart TD
@@ -317,11 +315,14 @@ Migrate an existing wide table gradually: document definitions and column mappin
 
 Changing a wide table into a long table changes storage shape. It does not automatically reduce feature computation or total data volume.
 
-### Let AI propose, then validate
+### 8.4 How AI uses the catalog
 
-An AI assistant can search the catalog, exclude unavailable or inapplicable features, and propose candidates with reasons. Those recommendations are hypotheses. Validate them before fixing a task feature set.
+1. Exclude features that cannot be used at the task's prediction time or do not meet the applicability conditions.
+2. Use feature descriptions to propose candidates and explain the reasoning, while allowing for useful feature combinations.
+3. Validate independently to determine the task's feature set.
+4. Fix feature definitions, data versions, and model versions, and record the selection rationale.
 
-Production runs should reference fixed definitions and reproducible data versions. Cache reuse must account for definitions, inputs, versions, and computation ranges.
+A language model can recommend candidates from their descriptions, but it cannot replace empirical validation. Production runs should use checked, fixed configurations. Cache reuse must account for definitions, inputs, versions, and computation ranges.
 
 ## 9. When to stop, and where to return
 
@@ -339,4 +340,4 @@ These gaps may coexist. A failed model does not identify the cause on its own.
 
 Keep four traceable records: the goal and success criteria, the representation and its sources, the supporting evidence, and the conditions under which reassessment is required.
 
-> Start with the distinctions that must survive. Then choose the dimensions that express them.
+> First ask what must remain distinguishable, then ask which dimensions to use. Dimension choices serve the goal; the credibility of the conclusion comes from evidence.

@@ -15,13 +15,28 @@ async function renderDiagrams() {
         const visual = document.createElement('div');
         visual.className = 'diagram-visual';
         visual.innerHTML = svg;
+        visual.tabIndex = 0;
+        visual.setAttribute('role', 'region');
+        visual.setAttribute('aria-label', `Diagram ${index + 1}; scroll horizontally if needed`);
+        const rendered = visual.querySelector('svg');
+        const width = rendered.viewBox.baseVal.width;
+        // Mermaid's base labels are 16px. Avoid scaling them below about 14px.
+        if (width) visual.style.setProperty('--diagram-width', `${Math.ceil(width * 0.875)}px`);
         const details = document.createElement('details');
         const summary = document.createElement('summary');
         summary.textContent = 'View diagram source';
         const pre = document.createElement('pre');
         pre.textContent = source;
         details.append(summary, pre);
-        figure.append(visual, details);
+        figure.append(visual);
+        const caption = block.parentElement.nextElementSibling;
+        if (caption?.tagName === 'P' && /^Figure \d+\./.test(caption.textContent.trim())) {
+          const figcaption = document.createElement('figcaption');
+          figcaption.innerHTML = caption.innerHTML;
+          figure.append(figcaption);
+          caption.remove();
+        }
+        figure.append(details);
         block.parentElement.replaceWith(figure);
       } catch (error) {
         console.warn('Diagram could not be rendered; keeping its source.', error);
