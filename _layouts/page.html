@@ -1,0 +1,7 @@
+---
+layout: default
+---
+<div class="shell page-shell">
+  <header class="page-heading"><p class="eyebrow">{{ page.eyebrow | default: 'The notebook' }}</p><h1>{{ page.title | escape }}</h1>{% if page.description %}<p class="lede">{{ page.description | escape }}</p>{% endif %}</header>
+  {{ content }}
+</div>

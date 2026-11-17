@@ -1,0 +1,34 @@
+title: Neoaksa Notes
+description: Notes on data, engineering, and ways of thinking.
+url: https://neoaksa.github.io
+baseurl: ""
+lang: en
+timezone: America/New_York
+author: Neoaksa
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+permalink: /articles/:title/
+strict_front_matter: true
+future: false
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: page
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+exclude:
+  - README.md
+  - AGENTS.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - scripts
+  - .bundle
+  - .github

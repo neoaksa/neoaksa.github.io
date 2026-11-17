@@ -1,0 +1,8 @@
+---
+title: Categories
+description: The broad subjects behind the writing.
+permalink: /categories/
+---
+{% assign groups = site.categories | sort %}
+<div class="taxonomy-index">{% for group in groups %}<a href="#{{ group[0] | slugify }}">{{ group[0] | escape }} <span>{{ group[1].size }}</span></a>{% endfor %}</div>
+{% for group in groups %}<section class="taxonomy-group" id="{{ group[0] | slugify }}"><h2>{{ group[0] | escape }}</h2>{% for post in group[1] %}{% include post-card.html post=post %}{% endfor %}</section>{% endfor %}

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://neoaksa.github.io/sitemap.xml

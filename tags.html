@@ -1,0 +1,8 @@
+---
+title: Tags
+description: Specific ideas that connect the articles.
+permalink: /tags/
+---
+{% assign groups = site.tags | sort %}
+<div class="taxonomy-index">{% for group in groups %}<a href="#{{ group[0] | slugify }}">{{ group[0] | escape }} <span>{{ group[1].size }}</span></a>{% endfor %}</div>
+{% for group in groups %}<section class="taxonomy-group" id="{{ group[0] | slugify }}"><h2>{{ group[0] | escape }}</h2><ul class="simple-post-list">{% for post in group[1] %}<li><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b %-d, %Y' }}</time><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></li>{% endfor %}</ul></section>{% endfor %}

@@ -1,0 +1,6 @@
+---
+title: All articles
+description: Essays, practical frameworks, and questions worth following.
+permalink: /articles/
+---
+<div class="archive-list">{% assign year = '' %}{% for post in site.posts %}{% assign post_year = post.date | date: '%Y' %}{% if post_year != year %}<h2 class="archive-year">{{ post_year }}</h2>{% assign year = post_year %}{% endif %}{% include post-card.html post=post %}{% endfor %}</div>

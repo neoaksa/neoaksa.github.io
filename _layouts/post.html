@@ -1,0 +1,17 @@
+---
+layout: default
+---
+<article class="shell article-shell">
+  <header class="article-heading">
+    <a class="back-link" href="{{ '/articles/' | relative_url }}">← All articles</a>
+    <div class="post-meta"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%B %-d, %Y' }}</time><span aria-hidden="true">/</span>{% for category in page.categories %}<a href="{{ '/categories/' | relative_url }}#{{ category | slugify }}">{{ category | escape }}</a>{% endfor %}<span aria-hidden="true">/</span><span>{{ content | strip_html | number_of_words | divided_by: 220 | plus: 1 }} min read</span></div>
+    <h1>{{ page.title | escape }}</h1>
+    <p class="lede">{{ page.description | escape }}</p>
+    <div class="tags">{% for tag in page.tags %}<a href="{{ '/tags/' | relative_url }}#{{ tag | slugify }}">{{ tag | escape }}</a>{% endfor %}</div>
+  </header>
+  <div class="article-grid">
+    <aside class="toc" aria-label="Article contents" hidden><p class="eyebrow">On this page</p><ol id="toc-list"></ol></aside>
+    <div class="prose" id="article-content" data-mermaid="{{ page.mermaid | default: false }}" data-math="{{ page.math | default: false }}">{{ content }}</div>
+  </div>
+  <div class="article-end"><span class="end-mark" aria-hidden="true">✳</span><p>Keep the questions. Revisit the assumptions.</p><a href="{{ '/articles/' | relative_url }}">Back to all articles →</a></div>
+</article>
