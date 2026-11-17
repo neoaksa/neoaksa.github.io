@@ -136,6 +136,26 @@
   color: var(--muted);
 }
 
+.article-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+.article-figure figcaption {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.article-figure figcaption a {
+  display: inline-block;
+  margin-left: 6px;
+}
+
 .prose .katex-display {
   margin: 28px 0;
   padding-block: 5px;
